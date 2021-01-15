@@ -1,0 +1,44 @@
+POST http://localhost:8080/submit HTTP/1.1
+content-type: application/json
+
+{
+	"title": "title {{$randomInt 1 1000}}",
+	"author": "t2_abcdefg{{$randomInt 0 9}}",
+	"link": "https://reddit.com/{{$randomInt 1 1000}}",
+	"subreddit": "subreddit {{$randomInt 1 10}}",
+	"score": {{$randomInt 1 100}},
+	"promoted": false,
+	"nsfw": false
+}
+
+###
+
+POST http://localhost:8080/submit HTTP/1.1
+content-type: application/json
+
+{
+	"title": "title {{$randomInt 1 1000}}",
+	"author": "author {{$randomInt 1 1000}}",
+	"link": "link {{$randomInt 1 1000}}",
+	"subreddit": "subreddit {{$randomInt 1 10}}",
+	"content": "content {{$randomInt 1 1000}}",
+	"score": {{$randomInt 1 100}},
+	"promoted": false,
+	"nsfw": true
+}
+
+###
+
+POST http://localhost:8080/submit HTTP/1.1
+content-type: application/json
+
+{
+	"title": "title {{$randomInt 1 1000}}",
+	"author": "author {{$randomInt 1 1000}}",
+	"link": "link {{$randomInt 1 1000}}",
+	"subreddit": "subreddit {{$randomInt 1 10}}",
+	"content": "content {{$randomInt 1 1000}}",
+	"score": {{$randomInt 1 100}},
+	"promoted": true,
+	"nsfw": false
+}
