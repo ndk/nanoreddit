@@ -12,6 +12,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"nanoreddit/internal/handler"
+	"nanoreddit/internal/materializer"
 	"nanoreddit/internal/server"
 	"nanoreddit/internal/signal"
 	"nanoreddit/internal/storage"
@@ -20,6 +21,7 @@ import (
 type config struct {
 	Server       server.Config
 	Storage      storage.Config
+	Materializer materializer.Config
 	RedisURL     string `env:"REDIS_URL,default=redis://localhost:6379/0"`
 	Logger       struct {
 		Level     string `env:"LOGGER_LEVEL,default=info"`
@@ -80,6 +82,10 @@ func main() {
 	g := &run.Group{}
 	{
 		srv := signal.NewService(cancel)
+		g.Add(srv.Execute, srv.Interrupt)
+	}
+	{
+		srv := materializer.NewService(ctx, cancel, redisClient, &cfg.Materializer)
 		g.Add(srv.Execute, srv.Interrupt)
 	}
 	{
