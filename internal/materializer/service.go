@@ -23,11 +23,6 @@ type service struct {
 func (s *service) Execute() error {
 	ctx := s.ctx
 
-	// https://github.com/go-redis/redis/pull/924#issuecomment-446267518
-	if err := s.client.XGroupCreateMkStream(ctx, s.cfg.Stream, s.cfg.Group, "0").Err(); err != nil && err.Error() != "BUSYGROUP Consumer Group name already exists" {
-		return fmt.Errorf("couldn't create a stream: %w", err)
-	}
-
 	readArg := &redis.XReadGroupArgs{
 		Group:    s.cfg.Group,
 		Consumer: s.cfg.Consumer,

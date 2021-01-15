@@ -18,11 +18,6 @@ type mockRedis struct {
 	m *mock.Mock
 }
 
-func (m *mockRedis) XGroupCreateMkStream(ctx context.Context, stream, group, start string) *redis.StatusCmd {
-	args := m.m.Called(ctx, stream, group, start)
-	return args.Get(0).(*redis.StatusCmd)
-}
-
 func (m *mockRedis) XReadGroup(ctx context.Context, a *redis.XReadGroupArgs) *redis.XStreamSliceCmd {
 	args := m.m.Called(ctx, a)
 	return args.Get(0).(*redis.XStreamSliceCmd)
@@ -47,21 +42,8 @@ func TestService(t *testing.T) {
 		}
 
 		Convey("Execute", func() {
-			Convey("It fails if XGroupCreateMkStream has been failed", func() {
-				m.
-					On("XGroupCreateMkStream", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
-					Return(redis.NewStatusResult("", errors.New("error")))
-
-				err := srv.Execute()
-
-				So(err, ShouldBeError, `couldn't create a stream: error`)
-			})
-
 			Convey("Suppress safe errors", func() {
-				const thisisFine = `BUSYGROUP Consumer Group name already exists`
 				m.
-					On("XGroupCreateMkStream", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
-					Return(redis.NewStatusResult("", errors.New(thisisFine))).
 					On("XReadGroup", mock.Anything, mock.Anything).
 					Return(redis.NewXStreamSliceCmdResult(nil, errors.New("error")))
 
@@ -85,8 +67,6 @@ func TestService(t *testing.T) {
 
 			Convey("It fails if XReadGroup has returned an inproper number of streams", func() {
 				m.
-					On("XGroupCreateMkStream", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
-					Return(redis.NewStatusResult("", nil)).
 					On("XReadGroup", mock.Anything, mock.Anything).
 					Return(redis.NewXStreamSliceCmdResult([]redis.XStream{{}, {}}, nil))
 
@@ -97,8 +77,6 @@ func TestService(t *testing.T) {
 
 			Convey("It keeps fetching", func() {
 				m.
-					On("XGroupCreateMkStream", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
-					Return(redis.NewStatusResult("", nil)).
 					On("XReadGroup", mock.Anything, mock.Anything).
 					Return(redis.NewXStreamSliceCmdResult([]redis.XStream{{}}, nil)).Once().
 					On("XReadGroup", mock.Anything, mock.Anything).
@@ -111,8 +89,6 @@ func TestService(t *testing.T) {
 
 			Convey("It fails if a message doesn't have an event payload", func() {
 				m.
-					On("XGroupCreateMkStream", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
-					Return(redis.NewStatusResult("", nil)).
 					On("XReadGroup", mock.Anything, mock.Anything).
 					Return(redis.NewXStreamSliceCmdResult(
 						[]redis.XStream{
@@ -129,8 +105,6 @@ func TestService(t *testing.T) {
 
 			Convey("It fails if an event payload is undecryptable", func() {
 				m.
-					On("XGroupCreateMkStream", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
-					Return(redis.NewStatusResult("", nil)).
 					On("XReadGroup", mock.Anything, mock.Anything).
 					Return(redis.NewXStreamSliceCmdResult(
 						[]redis.XStream{
@@ -148,8 +122,6 @@ func TestService(t *testing.T) {
 			Convey("A promoted post", func() {
 				Convey("It fails if a promotion event cannot be save on the storage", func() {
 					m.
-						On("XGroupCreateMkStream", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
-						Return(redis.NewStatusResult("", nil)).
 						On("XReadGroup", mock.Anything, mock.Anything).
 						Return(redis.NewXStreamSliceCmdResult(
 							[]redis.XStream{
@@ -168,8 +140,6 @@ func TestService(t *testing.T) {
 
 				Convey("Successful story", func() {
 					m.
-						On("XGroupCreateMkStream", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
-						Return(redis.NewStatusResult("", nil)).
 						On("XReadGroup", mock.Anything, mock.Anything).
 						Return(redis.NewXStreamSliceCmdResult(
 							[]redis.XStream{
@@ -192,8 +162,6 @@ func TestService(t *testing.T) {
 			Convey("An ordinary post", func() {
 				Convey("It fails if an event cannot be save on the storage", func() {
 					m.
-						On("XGroupCreateMkStream", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
-						Return(redis.NewStatusResult("", nil)).
 						On("XReadGroup", mock.Anything, mock.Anything).
 						Return(redis.NewXStreamSliceCmdResult(
 							[]redis.XStream{
@@ -212,8 +180,6 @@ func TestService(t *testing.T) {
 
 				Convey("Successful story", func() {
 					m.
-						On("XGroupCreateMkStream", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
-						Return(redis.NewStatusResult("", nil)).
 						On("XReadGroup", mock.Anything, mock.Anything).
 						Return(redis.NewXStreamSliceCmdResult(
 							[]redis.XStream{
@@ -235,8 +201,6 @@ func TestService(t *testing.T) {
 
 			Convey("Successful story (mixed messages)", func() {
 				m.
-					On("XGroupCreateMkStream", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
-					Return(redis.NewStatusResult("", nil)).
 					On("XReadGroup", mock.Anything, mock.Anything).
 					Return(redis.NewXStreamSliceCmdResult(
 						[]redis.XStream{
