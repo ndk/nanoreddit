@@ -9,6 +9,9 @@ import (
 	"nanoreddit/pkg/protocol"
 )
 
+//TODO using such constants crosspackagely isn't a good idea. it would be better to extract it into an abstration
+const StreamValueField = "event"
+
 type storage struct {
 	cfg    *Config
 	client redis.Cmdable
@@ -24,7 +27,7 @@ func (s *storage) AddPost(ctx context.Context, post *protocol.Post) error {
 
 	a := redis.XAddArgs{
 		Stream: s.cfg.Stream,
-		Values: map[string]interface{}{"event": blob},
+		Values: map[string]interface{}{StreamValueField: blob},
 	}
 	if err := s.client.XAdd(ctx, &a).Err(); err != nil {
 		return err

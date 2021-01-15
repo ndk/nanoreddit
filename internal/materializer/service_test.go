@@ -8,6 +8,8 @@ import (
 	"github.com/go-redis/redis/v8"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/mock"
+
+	"nanoreddit/internal/storage"
 )
 
 type mockRedis struct {
@@ -133,7 +135,7 @@ func TestService(t *testing.T) {
 					Return(redis.NewXStreamSliceCmdResult(
 						[]redis.XStream{
 							{Messages: []redis.XMessage{
-								{Values: map[string]interface{}{"event": ""}},
+								{Values: map[string]interface{}{storage.StreamValueField: ""}},
 							},
 							},
 						}, nil)).Once()
@@ -152,7 +154,7 @@ func TestService(t *testing.T) {
 						Return(redis.NewXStreamSliceCmdResult(
 							[]redis.XStream{
 								{Messages: []redis.XMessage{
-									{Values: map[string]interface{}{"event": `{"promoted": true}`}},
+									{Values: map[string]interface{}{storage.StreamValueField: `{"promoted": true}`}},
 								},
 								},
 							}, nil)).Once().
@@ -172,7 +174,7 @@ func TestService(t *testing.T) {
 						Return(redis.NewXStreamSliceCmdResult(
 							[]redis.XStream{
 								{Messages: []redis.XMessage{
-									{Values: map[string]interface{}{"event": `{"promoted": true}`}},
+									{Values: map[string]interface{}{storage.StreamValueField: `{"promoted": true}`}},
 								},
 								},
 							}, nil)).Once().
@@ -196,7 +198,7 @@ func TestService(t *testing.T) {
 						Return(redis.NewXStreamSliceCmdResult(
 							[]redis.XStream{
 								{Messages: []redis.XMessage{
-									{Values: map[string]interface{}{"event": `{"promoted": false}`}},
+									{Values: map[string]interface{}{storage.StreamValueField: `{"promoted": false}`}},
 								},
 								},
 							}, nil)).Once().
@@ -216,7 +218,7 @@ func TestService(t *testing.T) {
 						Return(redis.NewXStreamSliceCmdResult(
 							[]redis.XStream{
 								{Messages: []redis.XMessage{
-									{Values: map[string]interface{}{"event": `{"promoted": false}`}},
+									{Values: map[string]interface{}{storage.StreamValueField: `{"promoted": false}`}},
 								},
 								},
 							}, nil)).Once().
@@ -239,10 +241,10 @@ func TestService(t *testing.T) {
 					Return(redis.NewXStreamSliceCmdResult(
 						[]redis.XStream{
 							{Messages: []redis.XMessage{
-								{Values: map[string]interface{}{"event": `{"promoted": false}`}},
-								{Values: map[string]interface{}{"event": `{"promoted": true}`}},
-								{Values: map[string]interface{}{"event": `{"promoted": false}`}},
-								{Values: map[string]interface{}{"event": `{"promoted": true}`}},
+								{Values: map[string]interface{}{storage.StreamValueField: `{"promoted": false}`}},
+								{Values: map[string]interface{}{storage.StreamValueField: `{"promoted": true}`}},
+								{Values: map[string]interface{}{storage.StreamValueField: `{"promoted": false}`}},
+								{Values: map[string]interface{}{storage.StreamValueField: `{"promoted": true}`}},
 							},
 							},
 						}, nil)).Once().
