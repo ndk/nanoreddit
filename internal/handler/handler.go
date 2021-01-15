@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -8,6 +9,7 @@ import (
 
 	"nanoreddit/internal/chi_utils"
 	"nanoreddit/internal/validation"
+	"nanoreddit/pkg/protocol"
 )
 
 type requestBinder interface {
@@ -19,14 +21,19 @@ type responseRender interface {
 	InternalServerError(w http.ResponseWriter, r *http.Request, err error)
 }
 
+type storage interface {
+	AddPost(ctx context.Context, post *protocol.Post) error
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 type handler struct {
 	binder  requestBinder
 	render  responseRender
+	storage storage
 }
 
-func NewHandler() (*handler, error) {
+func NewHandler(storage storage) (*handler, error) {
 	validateStruct, err := validation.NewValidator()
 	if err != nil {
 		return nil, fmt.Errorf("Couldn't create a validator: %w", err)
@@ -37,5 +44,6 @@ func NewHandler() (*handler, error) {
 	return &handler{
 		render:  render,
 		binder:  binder,
+		storage: storage,
 	}, nil
 }

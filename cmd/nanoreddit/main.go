@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/joeshaw/envdecode"
 	"github.com/oklog/run"
 	"github.com/rs/zerolog"
@@ -13,10 +14,13 @@ import (
 	"nanoreddit/internal/handler"
 	"nanoreddit/internal/server"
 	"nanoreddit/internal/signal"
+	"nanoreddit/internal/storage"
 )
 
 type config struct {
 	Server       server.Config
+	Storage      storage.Config
+	RedisURL     string `env:"REDIS_URL,default=redis://localhost:6379/0"`
 	Logger       struct {
 		Level     string `env:"LOGGER_LEVEL,default=info"`
 		Timestamp bool   `env:"LOGGER_TIMESTAMP,default=true"`
@@ -60,13 +64,26 @@ func main() {
 	ctx, cancel := context.WithCancel(l.WithContext(context.Background()))
 	zerolog.Ctx(ctx).Info().Interface("config", &cfg).Msg("The gathered config")
 
+	redisOpt, err := redis.ParseURL(cfg.RedisURL)
+	if err != nil {
+		zerolog.Ctx(ctx).Fatal().Err(err).Send()
+		return
+	}
+	redisClient := redis.NewClient(redisOpt)
+	defer func() {
+		if err := redisClient.Close(); err != nil {
+			zerolog.Ctx(ctx).Error().Err(err).Send()
+		}
+	}()
+	storage := storage.NewStorage(&cfg.Storage, redisClient)
+
 	g := &run.Group{}
 	{
 		srv := signal.NewService(cancel)
 		g.Add(srv.Execute, srv.Interrupt)
 	}
 	{
-		handler, err := handler.NewHandler()
+		handler, err := handler.NewHandler(storage)
 		if err != nil {
 			zerolog.Ctx(ctx).Fatal().Err(err).Msg("Couldn't initialize an endpoints handler")
 			return
