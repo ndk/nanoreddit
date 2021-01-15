@@ -18,7 +18,7 @@ func (h *handler) Feed(w http.ResponseWriter, r *http.Request) {
 		if pageVal != "" {
 			v, err := strconv.Atoi(pageVal)
 			if err != nil {
-				h.render.InvalidRequest(w, r, fmt.Errorf("Couldn't recognize the page number: %w", err))
+				h.render.InvalidRequest(w, r, fmt.Errorf("couldn't recognize the page number: %w", err))
 				return
 			}
 			page = v

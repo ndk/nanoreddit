@@ -52,7 +52,7 @@ func TestService(t *testing.T) {
 
 				err := srv.Execute()
 
-				So(err, ShouldBeError, `Couldn't create a stream: error`)
+				So(err, ShouldBeError, `couldn't create a stream: error`)
 			})
 
 			Convey("Suppress safe errors", func() {
@@ -78,7 +78,7 @@ func TestService(t *testing.T) {
 
 				err := srv.Execute()
 
-				So(err.Error(), ShouldEqual, `Couldn't read a group: error`)
+				So(err.Error(), ShouldEqual, `couldn't read a group: error`)
 			})
 
 			Convey("It fails if XReadGroup has returned an inproper number of streams", func() {
@@ -90,7 +90,7 @@ func TestService(t *testing.T) {
 
 				err := srv.Execute()
 
-				So(err.Error(), ShouldEqual, `Unexpected number of streams: 2`)
+				So(err.Error(), ShouldEqual, `unexpected number of streams: 2`)
 			})
 
 			Convey("It keeps fetching", func() {
@@ -104,7 +104,7 @@ func TestService(t *testing.T) {
 
 				err := srv.Execute()
 
-				So(err.Error(), ShouldEqual, `Couldn't read a group: stop`)
+				So(err.Error(), ShouldEqual, `couldn't read a group: stop`)
 			})
 
 			Convey("It fails if a message doesn't have an event payload", func() {
@@ -122,7 +122,7 @@ func TestService(t *testing.T) {
 
 				err := srv.Execute()
 
-				So(err.Error(), ShouldEqual, `Couldn't find an event in a message: { map[]}`)
+				So(err.Error(), ShouldEqual, `couldn't find an event in a message: { map[]}`)
 			})
 
 			Convey("It fails if an event payload is undecryptable", func() {
@@ -140,7 +140,7 @@ func TestService(t *testing.T) {
 
 				err := srv.Execute()
 
-				So(err.Error(), ShouldEqual, `Couldn't unmarshal a saved post: unexpected end of JSON input`)
+				So(err.Error(), ShouldEqual, `couldn't unmarshal a saved post: unexpected end of JSON input`)
 			})
 
 			Convey("A promoted post", func() {
@@ -161,7 +161,7 @@ func TestService(t *testing.T) {
 
 					err := srv.Execute()
 
-					So(err.Error(), ShouldEqual, `Couldn't put a promoted post into a ring: error`)
+					So(err.Error(), ShouldEqual, `couldn't put a promoted post into a ring: error`)
 				})
 
 				Convey("Successful story", func() {
@@ -183,7 +183,7 @@ func TestService(t *testing.T) {
 
 					err := srv.Execute()
 
-					So(err.Error(), ShouldEqual, `Couldn't read a group: stop`)
+					So(err.Error(), ShouldEqual, `couldn't read a group: stop`)
 				})
 			})
 
@@ -205,7 +205,7 @@ func TestService(t *testing.T) {
 
 					err := srv.Execute()
 
-					So(err.Error(), ShouldEqual, `Couldn't put a post into the feed: error`)
+					So(err.Error(), ShouldEqual, `couldn't put a post into the feed: error`)
 				})
 
 				Convey("Successful story", func() {
@@ -227,7 +227,7 @@ func TestService(t *testing.T) {
 
 					err := srv.Execute()
 
-					So(err.Error(), ShouldEqual, `Couldn't read a group: stop`)
+					So(err.Error(), ShouldEqual, `couldn't read a group: stop`)
 				})
 			})
 
@@ -259,7 +259,7 @@ func TestService(t *testing.T) {
 
 				err := srv.Execute()
 
-				So(err.Error(), ShouldEqual, `Couldn't read a group: stop`)
+				So(err.Error(), ShouldEqual, `couldn't read a group: stop`)
 			})
 		})
 	})
