@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  nanoreddit:
+    image: golang:latest
+    build: .
+    environment:
+      SERVICE_LISTEN_ADDRESS: :8080
+      SERVICE_SHUTDOWN_TIMEOUT: 30s
+      LOGGER_LEVEL: trace
+      ES_GROUP: materializer
+      ES_CONSUMER: nanoreddit
+      ES_STREAM: posts
+      ES_FEED: feed
+      ES_PROMOTION: promotion
+      FEED_PAGE_SIZE: 25
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - 8080:8080
+    external_links:
+      - redis:redis
+
+networks:
+  custom:
+    external: true
