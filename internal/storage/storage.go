@@ -37,6 +37,7 @@ func (s *storage) AddPost(ctx context.Context, post *protocol.Post) error {
 }
 
 func (s *storage) GetFeed(ctx context.Context, page int) ([]protocol.Post, error) {
+	// Posts on Redis are already sorted by score.
 	blobs, err := s.client.ZRevRangeByScore(ctx, s.cfg.Feed, &redis.ZRangeBy{
 		Min:    "-inf",
 		Max:    "+inf",
@@ -47,7 +48,8 @@ func (s *storage) GetFeed(ctx context.Context, page int) ([]protocol.Post, error
 		return nil, err
 	}
 
-	feed := make([]protocol.Post, 0, len(blobs))
+	// A result can have up to two additional promoted posts.
+	feed := make([]protocol.Post, 0, len(blobs)+2)
 	for _, blob := range blobs {
 		var post protocol.Post
 		if err := json.Unmarshal([]byte(blob), &post); err != nil {
@@ -55,11 +57,18 @@ func (s *storage) GetFeed(ctx context.Context, page int) ([]protocol.Post, error
 		}
 		feed = append(feed, post)
 
-		//TODO get rid a magic number
-		if (len(feed) != 3 && len(feed) != 17) || (feed[len(feed)-3].NSFW || feed[len(feed)-2].NSFW) {
+		// TODO get rid a magic number
+		// TODO check the case when we got 16 posts
+		// We have to add a promoted post only if we've just reached 3 or 17 posts but not yet exceeded it.
+		if len(feed) != 3 && len(feed) != 17 {
+			continue
+		}
+		// Unless there are some NSFW posts.
+		if feed[len(feed)-3].NSFW || feed[len(feed)-2].NSFW {
 			continue
 		}
 
+		// RPOPLPUSH lets a list to act as a circular one. Hence we can show promoted posts evenly.
 		blob, err := s.client.RPopLPush(ctx, s.cfg.Promotion, s.cfg.Promotion).Result()
 		if err != nil {
 			if err == redis.Nil {
@@ -72,6 +81,7 @@ func (s *storage) GetFeed(ctx context.Context, page int) ([]protocol.Post, error
 		if err := json.Unmarshal([]byte(blob), &promotedPost); err != nil {
 			return nil, err
 		}
+		// Insert a promoted post into feed.
 		//TODO improve
 		prev := len(feed)
 		feed = append(feed, promotedPost)
