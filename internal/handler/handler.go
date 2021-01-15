@@ -37,7 +37,7 @@ type handler struct {
 func NewHandler(storage storage) (*handler, error) {
 	validateStruct, err := validation.NewValidator()
 	if err != nil {
-		return nil, fmt.Errorf("Couldn't create a validator: %w", err)
+		return nil, fmt.Errorf("couldn't create a validator: %w", err)
 	}
 	render := chi_utils.NewRender()
 	binder := chi_utils.NewBinder(validateStruct, render.InvalidRequest)

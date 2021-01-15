@@ -37,7 +37,7 @@ func TestFeed(t *testing.T) {
 			So(m.AssertExpectations(t), ShouldBeTrue)
 			resBbody, err := ioutil.ReadAll(resp.Body)
 			So(err, ShouldBeNil)
-			So(string(resBbody), assertions.ShouldEqualJSON, `{"errors":[{"code":400,"description":"Couldn't recognize the page number: strconv.Atoi: parsing \"a\": invalid syntax"}]}`)
+			So(string(resBbody), assertions.ShouldEqualJSON, `{"errors":[{"code":400,"description":"couldn't recognize the page number: strconv.Atoi: parsing \"a\": invalid syntax"}]}`)
 		})
 
 		Convey("It passes a page number to the storage", func() {
