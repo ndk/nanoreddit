@@ -103,6 +103,7 @@ Service nanoreddit includes several routines:
 
 ```
 % docker-compose -f docker-compose.infra.yaml -f docker-compose.service.yaml up --build
+% go test -tags=integration ./test -count=1
 ```
 
 To configure service you can use environment variables:
