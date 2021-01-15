@@ -23,6 +23,7 @@ type responseRender interface {
 
 type storage interface {
 	AddPost(ctx context.Context, post *protocol.Post) error
+	GetFeed(ctx context.Context, page int) ([]protocol.Post, error)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
