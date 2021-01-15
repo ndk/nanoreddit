@@ -77,6 +77,15 @@ func main() {
 			zerolog.Ctx(ctx).Error().Err(err).Send()
 		}
 	}()
+	{
+		// let's ensure that the stream and the group exist.
+		// https://github.com/go-redis/redis/pull/924#issuecomment-446267518
+		const ErrConsumerGroupNameAlreadyExists = "BUSYGROUP Consumer Group name already exists"
+		if err := redisClient.XGroupCreateMkStream(ctx, cfg.Materializer.Stream, cfg.Materializer.Group, "0").Err(); err != nil && err.Error() != ErrConsumerGroupNameAlreadyExists {
+			zerolog.Ctx(ctx).Fatal().Err(err).Msg("couldn't create a stream")
+			return
+		}
+	}
 	storage := storage.NewStorage(&cfg.Storage, redisClient)
 
 	g := &run.Group{}
