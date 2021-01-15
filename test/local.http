@@ -42,3 +42,19 @@ content-type: application/json
 	"promoted": true,
 	"nsfw": false
 }
+
+###
+
+GET http://localhost:8080/feed HTTP/1.1
+
+###
+
+GET http://localhost:8080/feed?page=1 HTTP/1.1
+
+###
+
+GET http://localhost:8080/feed?page=2 HTTP/1.1
+
+###
+
+GET http://localhost:8080/feed?page=3 HTTP/1.1
