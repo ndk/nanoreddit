@@ -47,6 +47,11 @@ func (m *mockStorage) AddPost(ctx context.Context, post *protocol.Post) error {
 	return args.Error(0)
 }
 
+func (m *mockStorage) GetFeed(ctx context.Context, page int) ([]protocol.Post, error) {
+	args := m.m.Called(ctx, page)
+	return args.Get(0).([]protocol.Post), args.Error(1)
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 func mockHandler(m *mock.Mock) (*handler, error) {
