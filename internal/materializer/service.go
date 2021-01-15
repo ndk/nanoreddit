@@ -8,6 +8,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/rs/zerolog"
 
+	"nanoreddit/internal/storage"
 	"nanoreddit/pkg/protocol"
 )
 
@@ -42,8 +43,7 @@ func (s *service) Execute() error {
 		}
 
 		for _, message := range streams[0].Messages {
-			//TODO get rid a magic constant
-			blob, ok := message.Values["event"].(string)
+			blob, ok := message.Values[storage.StreamValueField].(string)
 			if !ok {
 				//TODO What will we do with the other messages?
 				return fmt.Errorf("couldn't find an event in a message: %v", message)

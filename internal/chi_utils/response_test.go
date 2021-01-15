@@ -12,9 +12,6 @@ import (
 
 	"github.com/go-chi/render"
 	. "github.com/smartystreets/goconvey/convey"
-
-	//TODO migrate to convey
-
 	"github.com/stretchr/testify/mock"
 
 	"nanoreddit/pkg/protocol"
