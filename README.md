@@ -95,7 +95,7 @@ to an NSFW post. You can ignore rules 3 and 4 in this case.
 ```
 
 Service nanoreddit includes several routines:
-1. http-server based on [hi](https://github.com/go-chi/chi). It accepts and validates requests. After this, all incoming posts go to the steam called `posts`. Of course, in production, it should be replaced something more reliable. For example, it can be Kafka.
+1. http-server based on [chi](https://github.com/go-chi/chi). It accepts and validates requests. After this, all incoming posts go to the steam called `posts`. Of course, in production, it should be replaced something more reliable. For example, it can be Kafka.
 2. The Materializer is a worker, which is processing posts from the stream `posts` and putting promoted and non-promoted posts into `promoted` and `feed` lists, respectively.
 3. The feed is accessible by calling `/feed`. It reads `feed` from Redis, enriches with some promoted posts, and returns as a response.
 
